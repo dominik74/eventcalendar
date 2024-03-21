@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  h2 {
+    @apply text-2xl;
+  }
+  
+  h3 {
+    @apply text-xl;
+  }
+  
+  button {
+    /* @apply bg-white text-black border border-gray-400 rounded shadow px-2
+    hover:bg-gray-100; */
+    
+    @apply bg-white border border-gray-300 hover:bg-blue-200 hover:border-blue-800
+    text-black px-2 rounded shadow disabled:bg-gray-100
+    disabled:text-gray-400 disabled:border-gray-300 focus:outline-blue-800;
+
+  }
+  
+  input {
+    @apply bg-white text-black border border-gray-300 rounded-sm px-2
+    	   focus:outline focus:outline-blue-800;
+  }
+  
+  input[type="color"] {
+    @apply bg-transparent border-0;
+    vertical-align: middle;
+    margin-top: -5px;
+  }
+  
+  .default-button {
+    @apply border-blue-800;
+  }
+
+  .small-button {
+    padding-left: 5px;
+    padding-right: 5px;
+    @apply text-sm;
+  }
+}

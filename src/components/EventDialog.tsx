@@ -1,0 +1,154 @@
+import { useEffect, useRef, useState } from "react";
+import { CalendarEvent } from "../App";
+import { format } from "date-fns";
+
+interface Props {
+    events: CalendarEvent[];
+    setEvents: (events: CalendarEvent[]) => void;
+    setIsVisible: (isVisible: boolean) => void;
+    selectedEvent: CalendarEvent | undefined;
+    selectedDate: Date | undefined;
+    isEditMode: boolean;
+    mousePosition: {top: number; left: number}
+}
+
+export default function EventDialog({events, setEvents, setIsVisible, selectedEvent,
+                                     selectedDate, isEditMode, mousePosition}: Props) {
+    const [eventTitle, setEventTitle] = useState<string>("");
+    const [eventGroupName, setEventGroupName] = useState<string>("default");
+    const [eventDate, setEventDate] = useState<Date | undefined>(undefined);
+    const windowRef = useRef(null);
+    
+    useEffect(() => {
+       setEventTitle("");
+       setEventGroupName("default");
+       setEventDate(new Date());
+       console.log("selected event: ", selectedEvent);
+       
+       if (selectedEvent) {
+            console.log("selected event not null");
+            setEventTitle(selectedEvent.title);
+            setEventGroupName(selectedEvent.groupName);
+            setEventDate(selectedEvent.date);
+       }
+       
+       if (windowRef.current) {
+           const width = windowRef.current.offsetWidth;
+           const height = windowRef.current.offsetHeight;
+           
+           windowRef.current.style.top = `${mousePosition.top - height / 2}px`;
+           windowRef.current.style.left = `${mousePosition.left - width / 2}px`;
+       }
+       
+    }, []);
+    
+    function saveAndClose() {
+        if (selectedEvent) {
+            setEvents(events.map(event => {
+                if (event === selectedEvent) {
+                    return {...event,
+                        title: eventTitle,
+                        groupName: eventGroupName
+                    };
+                }
+                
+                return event;
+            }));
+        } else {
+            const newEvent: CalendarEvent = {
+                title: eventTitle,
+                date: selectedDate || new Date(),
+                groupName: "default"
+            };
+            
+            setEvents([...events, newEvent]);
+        }
+        
+        setIsVisible(false);
+    }
+    
+    function deleteEvent() {
+        if (selectedEvent) {
+            setEvents(events.filter(event => event !== selectedEvent));
+        }
+        
+        setIsVisible(false);
+    }
+    
+    return (
+      <>
+        {/* selected date: {selectedDate ? format(selectedDate, "yyyy-MM-dd") : "none"} <br />
+        selected event: {selectedEvent ? selectedEvent.title : "none"} */}
+        
+        <div className="fixed top-5 bg-white w-100 rounded shadow-xl border border-gray-400"
+             ref={windowRef}>
+	     {/*pt 1*/}
+            <div className="flex justify-between items-center px-4 pt-2">
+                <h4>{isEditMode ? "edit event" : "new event"}</h4>
+                
+                <div>
+                    
+                    
+                    {/* <button onClick={() => setIsVisible(false)}>
+                        X
+                    </button> */}
+                </div>
+            </div>
+            
+            <div className="px-4 pt-1 pb-2">
+                
+                <span className="text-sm">date</span>
+                
+                <input className="mb-1 w-full bg-gray-100 shadow hover:bg-blue-100 hover:border-blue-800
+                                cursor-pointer"
+                    type="date"
+                    value={eventDate ? format(eventDate, "yyyy-MM-dd") : "none"}
+                    onChange={e => setEventDate(new Date(e.target.value))} />
+                
+                {/* date: {eventDate ? format(eventDate, "yyyy-MM-dd") : "none"} <br /> */}
+                
+                <span className="text-sm">group</span>
+                
+                <input className="mb-1 w-full"
+                    type="text"
+                    value={eventGroupName}
+                    onChange={e => setEventGroupName(e.target.value)} />
+                        
+                <br />
+                
+                <span className="text-sm">title</span>
+                
+                <div className="flex">
+                    <input className="flex-1 focus:outline-none focus:border-blue-800"
+                            type="text"
+                        //    ref={input => input?.focus()}
+                            autoFocus
+                            value={eventTitle}
+                            onChange={e => setEventTitle(e.target.value)}
+                            onKeyDown={e => e.key === "Enter" && saveAndClose()}/>
+                            
+                </div>
+            </div>
+            
+            <div className="flex items-center justify-end bg-gray-100 h-11 p-4 rounded-b border-t border-gray-300 mt-2">
+                {isEditMode && 
+                    <button className="w-20 mr-2"
+                            onClick={deleteEvent}>
+                        delete
+                    </button>}
+
+                
+                <button className="w-20"
+                        onClick={() => setIsVisible(false)}>
+                    discard
+                </button>
+                
+                <button className="w-20 ml-2 default-button"
+                        onClick={saveAndClose}>
+                    {isEditMode ? "save" : "create"}
+                </button>
+            </div>
+        </div>
+      </>  
+    );
+}
