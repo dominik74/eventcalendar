@@ -1,3 +1,6 @@
+> [!WARNING]
+> Starý projekt, obsahuje méně kvalitní kód. Zejména nedostatek enkapsulace.
+
 # Event Calendar
 
 A simple calendar web app with the possibility of quickly creating a new event by writing a short command.
